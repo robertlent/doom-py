@@ -46,7 +46,7 @@ class Raycasting:
 
             y_horizontal, dy = (
                 y_map + 1, 1) if sin_a > 0 else (y_map - 1e-6, -1)
-            depth_horizontal = (y_map - oy) / sin_a
+            depth_horizontal = (y_horizontal - oy) / sin_a
             x_horizontal = ox + depth_horizontal * cos_a
 
             delta_depth = dy / sin_a
