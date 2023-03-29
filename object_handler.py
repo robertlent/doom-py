@@ -1,5 +1,6 @@
 from sprite_object import *
 from npc import *
+from random import choices, randrange
 
 
 class ObjectHandler:
@@ -13,6 +14,11 @@ class ObjectHandler:
         add_sprite = self.add_sprite
         add_npc = self.add_npc
         self.npc_positions = {}
+        self.enemy_count = 5
+        self.enemy_types = [NPC, CacoDemonNPC, CyberDemonNPC]
+        self.weights = [70, 20, 10]
+        self.restricted_area = {(i, j) for i in range(10) for j in range(10)}
+        self.spawn_enemies()
 
         add_sprite(SpriteObject(game))
         add_sprite(AnimatedSprite(game))
@@ -30,10 +36,17 @@ class ObjectHandler:
         add_sprite(AnimatedSprite(
             game, path=self.animated_sprite_path + 'red_light/0.png', pos=(19.5, 7.5)))
 
-        add_npc(NPC(game))
-        add_npc(NPC(game, pos=(11.5, 4.5)))
-        add_npc(CacoDemonNPC(game))
-        add_npc(CyberDemonNPC(game))
+    def spawn_enemies(self):
+        for i in range(self.enemy_count):
+            enemies = choices(self.enemy_types, self.weights)[0]
+            pos = x, y = randrange(
+                self.game.map.columns), randrange(self.game.map.rows)
+
+            while (pos in self.game.map.world_map) or (pos in self.restricted_area):
+                pos = x, y = randrange(
+                    self.game.map.columns), randrange(self.game.map.rows)
+
+            self.add_npc(enemies(self.game, pos=(x + 0.5, y + 0.5)))
 
     def check_win(self):
         if not len(self.npc_positions):

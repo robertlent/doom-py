@@ -20,6 +20,8 @@ class Map:
         self.game = game
         self.mini_map = mini_map
         self.world_map = {}
+        self.rows = len(self.mini_map)
+        self.columns = len(self.mini_map[0])
         self.get_map()
 
     def get_map(self):
