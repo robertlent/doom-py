@@ -2,8 +2,8 @@ from sprite_object import *
 from random import randint, random, choice
 
 
-class NPC(AnimatedSprite):
-    def __init__(self, game, path='assets/sprites/npc/soldier/0.png', pos=(10.5, 5.5), scale=0.6, shift=0.38, animation_time=180):
+class Enemy(AnimatedSprite):
+    def __init__(self, game, path='assets/sprites/enemy/soldier/0.png', pos=(10.5, 5.5), scale=0.6, shift=0.38, animation_time=180):
         super().__init__(game, path, pos, scale, shift, animation_time)
         self.attack_images = self.get_images(self.path + '/attack')
         self.death_images = self.get_images(self.path + '/death')
@@ -43,7 +43,7 @@ class NPC(AnimatedSprite):
             self.map_pos, self.game.player.map_pos)
         next_x, next_y = next_pos
 
-        if next_pos not in self.game.object_handler.npc_positions:
+        if next_pos not in self.game.object_handler.enemy_positions:
             angle = math.atan2(next_y + 0.5 - self.y, next_x + 0.5 - self.x)
             dx = math.cos(angle) * self.speed
             dy = math.sin(angle) * self.speed
@@ -51,7 +51,7 @@ class NPC(AnimatedSprite):
 
     def attack(self):
         if self.animation_trigger:
-            self.game.sound.npc_attack.play()
+            self.game.sound.enemy_attack.play()
 
             if random() <= self.accuracy:
                 self.game.player.get_damage(self.attack_damage)
@@ -69,10 +69,10 @@ class NPC(AnimatedSprite):
         if self.animation_trigger:
             self.pain = False
 
-    def check_hit_in_npc(self):
+    def check_hit_in_enemy(self):
         if self.game.player.shot and self.ray_cast_value:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                self.game.sound.npc_pain.play()
+                self.game.sound.enemy_pain.play()
                 self.game.player.shot = False
                 self.pain = True
                 self.health -= self.game.weapon.damage
@@ -81,12 +81,12 @@ class NPC(AnimatedSprite):
     def check_health(self):
         if self.health < 1:
             self.alive = False
-            self.game.sound.npc_death.play()
+            self.game.sound.enemy_death.play()
 
     def run_logic(self):
         if self.alive:
-            self.ray_cast_value = self.ray_cast_player_npc()
-            self.check_hit_in_npc()
+            self.ray_cast_value = self.ray_cast_player_enemy()
+            self.check_hit_in_enemy()
 
             if self.pain:
                 self.animate_pain()
@@ -111,7 +111,7 @@ class NPC(AnimatedSprite):
     def map_pos(self):
         return int(self.x), int(self.y)
 
-    def ray_cast_player_npc(self):
+    def ray_cast_player_enemy(self):
         if self.game.player.map_pos == self.map_pos:
             return True
 
@@ -183,8 +183,8 @@ class NPC(AnimatedSprite):
         return False
 
 
-class CacoDemonNPC(NPC):
-    def __init__(self, game, path='assets/sprites/npc/caco_demon/0.png', pos=(10.5, 6.5), scale=0.7, shift=0.27, animation_time=250):
+class CacoDemonEnemy(Enemy):
+    def __init__(self, game, path='assets/sprites/enemy/caco_demon/0.png', pos=(10.5, 6.5), scale=0.7, shift=0.27, animation_time=250):
         super().__init__(game, path, pos, scale, shift, animation_time)
         self.attack_distance = 1.0
         self.health = 150
@@ -193,8 +193,8 @@ class CacoDemonNPC(NPC):
         self.accuracy = 0.35
 
 
-class CyberDemonNPC(NPC):
-    def __init__(self, game, path='assets/sprites/npc/cyber_demon/0.png', pos=(11.5, 6.0), scale=1.0, shift=0.04, animation_time=210):
+class CyberDemonEnemy(Enemy):
+    def __init__(self, game, path='assets/sprites/enemy/cyber_demon/0.png', pos=(11.5, 6.0), scale=1.0, shift=0.04, animation_time=210):
         super().__init__(game, path, pos, scale, shift, animation_time)
         self.attack_distance = 6.0
         self.health = 200
