@@ -36,13 +36,15 @@ class Player:
     def get_damage(self, damage):
         self.health -= damage
         self.game.object_renderer.player_damage()
-        self.game.sound.player_pain.play()
+        if not self.game.is_muted:
+            self.game.sound.player_pain.play()
         self.check_game_over()
 
     def single_fire_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1 and not self.shot and not self.game.weapon.reloading:
-                self.game.sound.shotgun.play()
+                if not self.game.is_muted:
+                    self.game.sound.shotgun.play()
                 self.shot = True
                 self.game.weapon.reloading = True
 
@@ -68,6 +70,14 @@ class Player:
         if keys[pg.K_d]:
             dx += -speed_sin
             dy += speed_cos
+
+        if keys[pg.K_m]:
+            if self.game.is_muted:
+                self.game.is_muted = False
+                pg.mixer.music.unpause()
+            else:
+                self.game.is_muted = True
+                pg.mixer.music.pause()
 
         self.check_wall_collision(dx, dy)
 

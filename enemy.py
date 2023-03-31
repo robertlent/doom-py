@@ -51,7 +51,8 @@ class Enemy(AnimatedSprite):
 
     def attack(self):
         if self.animation_trigger:
-            self.game.sound.enemy_attack.play()
+            if not self.game.is_muted:
+                self.game.sound.enemy_attack.play()
 
             if random() <= self.accuracy:
                 self.game.player.get_damage(self.attack_damage)
@@ -72,7 +73,8 @@ class Enemy(AnimatedSprite):
     def check_hit_in_enemy(self):
         if self.game.player.shot and self.ray_cast_value:
             if HALF_WIDTH - self.sprite_half_width < self.screen_x < HALF_WIDTH + self.sprite_half_width:
-                self.game.sound.enemy_pain.play()
+                if not self.game.is_muted:
+                    self.game.sound.enemy_pain.play()
                 self.game.player.shot = False
                 self.pain = True
                 self.health -= self.game.weapon.damage
@@ -81,7 +83,8 @@ class Enemy(AnimatedSprite):
     def check_health(self):
         if self.health < 1:
             self.alive = False
-            self.game.sound.enemy_death.play()
+            if not self.game.is_muted:
+                self.game.sound.enemy_death.play()
 
     def run_logic(self):
         if self.alive:
